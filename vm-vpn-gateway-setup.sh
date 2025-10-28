@@ -196,7 +196,6 @@ while true; do
 done
 
 echo "${CYAN}Enabling IP forwarding for routing...${RESET}"
-sudo sed -i '/^#*net\.ipv4\.ip_forward/s/^#*/ /' /etc/sysctl.conf
 sudo sed -i '/^net\.ipv4\.ip_forward/ d' /etc/sysctl.conf
 echo "net.ipv4.ip_forward = 1" | sudo tee -a /etc/sysctl.conf
 sudo sysctl -p
