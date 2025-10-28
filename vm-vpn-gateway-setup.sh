@@ -14,6 +14,13 @@ clear
 
 # Tested on Ubuntu (20.04+/22.04+) minimal server 
 
+for cmd in wireguard wg-quick iptables nano curl; do
+	if ! command -v $cmd ?/dev/null 2>&1; then
+		echo "${RED}Required command not found: $cmd${RESET}"
+		exit 1
+	fi
+done
+
 echo "${CYAN}${BOLD}====================================================================${RESET}"
 echo "${CYAN}${BOLD}   VirtualMachine VPN Gateway Linux - Automated Installer (v1.0)    ${RESET}"
 echo "${CYAN}      - Ubuntu 20.04+/22.04+ (minimal server)                              ${RESET}"
@@ -196,7 +203,6 @@ while true; do
 done
 
 echo "${CYAN}Enabling IP forwarding for routing...${RESET}"
-sudo sed -i '/^#*net\.ipv4\.ip_forward/s/^#*/ /' /etc/sysctl.conf
 sudo sed -i '/^net\.ipv4\.ip_forward/ d' /etc/sysctl.conf
 echo "net.ipv4.ip_forward = 1" | sudo tee -a /etc/sysctl.conf
 sudo sysctl -p
@@ -204,7 +210,7 @@ sudo sysctl -p
 WG_NAME=$(basename "${WG_CONF%.*}")
 echo "${CYAN}Activating WireGuard tunnel ($WG_NAME)...${RESET}"
 sudo chmod 600 "$WG_CONF"
-sudo systemctl stop wg-quick@$WG_CONF || true
+sudo systemctl stop wg-quick@"$WG_CONF" || true
 sudo wg-quick up "$WG_NAME"
 
 echo "${CYAN}Configuring NAT (LAN traffic via WAN VPN interface)...${RESET}"
@@ -320,7 +326,6 @@ while true; do
 done
 
 echo "${CYAN}Enabling IP forwarding for routing...${RESET}"
-sudo sed -i '/^#*net\.ipv4\.ip_forward/s/^#*/ /' /etc/sysctl.conf
 sudo sed -i '/^net\.ipv4\.ip_forward/ d' /etc/sysctl.conf
 echo "net.ipv4.ip_forward = 1" | sudo tee -a /etc/sysctl.conf
 sudo sysctl -p
@@ -328,8 +333,13 @@ sudo sysctl -p
 WG_NAME=$(basename "${WG_CONF%.*}")
 echo "${CYAN}Activating WireGuard tunnel ($WG_NAME)...${RESET}"
 sudo chmod 600 "$WG_CONF"
-sudo systemctl stop wg-quick@$WG_CONF || true
+sudo systemctl stop wg-quick@"$WG_CONF" || true
 sudo wg-quick up "$WG_NAME"
+
+if [[ $? -ne 0 ]]; then
+	echo "${RED}WireGuard failed to start - check your config file and logs.${RESET}"
+	exit 1
+fi
 
 echo "${CYAN}Configuring NAT (LAN traffic via WAN VPN interface)...${RESET}"
 sudo iptables -t nat -A POSTROUTING -o "$WAN_IF" -j MASQUERADE
