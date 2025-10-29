@@ -1,9 +1,14 @@
-# vm-vpn-gateway
+<img src='logo_vm-vpn-gateway.png' width=200px align='right' />
 
 ![Shell Script](https://img.shields.io/badge/language-bash-lightgrey?logo=gnu-bash)
 ![Licence: AGPL-3.0](https://img.shields.io/github/license/Nathan-Bransby-NMT/vm-vpn-gateway)
 ![Ubuntu 20.04+/22.04+](https://img.shields.io/badge/platform-ubuntu-blue?logo=ubuntu)
 ![WireGuard Compatible](https://img.shields.io/badge/vpn-wireguard-green?logo=wireguard)
+
+
+
+
+# VM VPN Gateway
 
 > **Interactive, secure VPN gateway installer for Ubuntu VMs, using WireGuard.**
 > All LAN network traffic routes via your commercial VPN.
